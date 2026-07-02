@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { VENDOR_API } from "@/constants/apiConstants";
 import { useApiMutation } from "@/hooks/use-mutation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -180,7 +181,7 @@ const VendorForm = ({ isOpen, onClose, vendorId }) => {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Address</label>
-            <Input
+            <Textarea
               placeholder="Address"
               value={data.vendor_address}
               onChange={(e) =>

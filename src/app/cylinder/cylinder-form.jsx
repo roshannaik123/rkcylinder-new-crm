@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import ReactSelect from "react-select";
 import {
   Select,
   SelectContent,
@@ -42,7 +43,15 @@ const CylinderForm = ({ isOpen, onClose }) => {
     queryKey: ["vendor-dropdown"],
     options: { enabled: isOpen },
   });
+  const vendorOptions =
+    vendorData?.vendor?.map((vendor) => ({
+      value: vendor.id.toString(),
+      label: vendor.vendor_name,
+    })) || [];
 
+  const selectedOption = vendorOptions.find(
+    (option) => option.value === data.cylinder_vendor_id,
+  );
   useEffect(() => {
     if (isOpen) {
       setData(initialState);
@@ -141,7 +150,7 @@ const CylinderForm = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <label className="text-sm font-medium">Vendor *</label>
             <Select
               onValueChange={(value) =>
@@ -160,6 +169,47 @@ const CylinderForm = ({ isOpen, onClose }) => {
                 ))}
               </SelectContent>
             </Select>
+            {errors.cylinder_vendor_id && (
+              <p className="text-xs text-red-500">
+                {errors.cylinder_vendor_id}
+              </p>
+            )}
+          </div>
+        </div> */}
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Vendor *</label>
+            <ReactSelect
+              options={vendorOptions}
+              value={selectedOption}
+              onChange={(option) => {
+                setData({
+                  ...data,
+                  cylinder_vendor_id: option ? option.value : "",
+                });
+                if (errors.cylinder_vendor_id) {
+                  setErrors((prev) => ({ ...prev, cylinder_vendor_id: "" }));
+                }
+              }}
+              placeholder="Search or select vendor..."
+              isClearable
+              isSearchable
+              className="react-select-container"
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: errors.cylinder_vendor_id
+                    ? "#ef4444"
+                    : base.borderColor,
+                  "&:hover": {
+                    borderColor: errors.cylinder_vendor_id
+                      ? "#ef4444"
+                      : base.borderColor,
+                  },
+                }),
+              }}
+            />
             {errors.cylinder_vendor_id && (
               <p className="text-xs text-red-500">
                 {errors.cylinder_vendor_id}

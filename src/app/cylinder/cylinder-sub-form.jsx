@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import ReactSelect from "react-select";
+
 import {
   Select,
   SelectContent,
@@ -101,6 +103,15 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
 
     fetchData();
   }, [isOpen, subId]);
+  const manufacturerOptions =
+    manufacturerData?.manufacturer?.map((m) => ({
+      value: m.id.toString(),
+      label: m.manufacturer_name,
+    })) || [];
+
+  const selectedManufacturer = manufacturerOptions.find(
+    (opt) => opt.value === data.cylinder_sub_manufacturer_id,
+  );
 
   const validate = () => {
     const newErrors = {};
@@ -205,23 +216,40 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Manufacturer *</label>
-            <Select
-              onValueChange={(value) =>
-                setData({ ...data, cylinder_sub_manufacturer_id: value })
-              }
-              value={data.cylinder_sub_manufacturer_id}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select manufacturer" />
-              </SelectTrigger>
-              <SelectContent>
-                {manufacturerData?.manufacturer?.map((m) => (
-                  <SelectItem key={m.id} value={m.id.toString()}>
-                    {m.manufacturer_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ReactSelect
+              options={manufacturerOptions}
+              value={selectedManufacturer}
+              onChange={(option) => {
+                setData({
+                  ...data,
+                  cylinder_sub_manufacturer_id: option ? option.value : "",
+                });
+                if (errors.cylinder_sub_manufacturer_id) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    cylinder_sub_manufacturer_id: "",
+                  }));
+                }
+              }}
+              placeholder="Search or select manufacturer..."
+              isClearable
+              isSearchable
+              className="react-select-container"
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: errors.cylinder_sub_manufacturer_id
+                    ? "#ef4444"
+                    : base.borderColor,
+                  "&:hover": {
+                    borderColor: errors.cylinder_sub_manufacturer_id
+                      ? "#ef4444"
+                      : base.borderColor,
+                  },
+                }),
+              }}
+            />
             {errors.cylinder_sub_manufacturer_id && (
               <p className="text-xs text-red-500">
                 {errors.cylinder_sub_manufacturer_id}
