@@ -121,7 +121,10 @@ const ManufacturerForm = ({ isOpen, onClose, manufacturerId }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md" aria-describedby={undefined}>
+      <DialogContent
+        className="w-[95vw] max-w-md sm:max-w-lg"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Edit Manufacturer" : "Create Manufacturer"}
@@ -145,7 +148,8 @@ const ManufacturerForm = ({ isOpen, onClose, manufacturerId }) => {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* Responsive grid: stacks on mobile, side‑by‑side on larger screens */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Mobile</label>
               <Input
@@ -193,6 +197,7 @@ const ManufacturerForm = ({ isOpen, onClose, manufacturerId }) => {
               onChange={(e) =>
                 setData({ ...data, manufacturer_address: e.target.value })
               }
+              className="h-24 resize-none overflow-y-scroll"
             />
           </div>
 
@@ -214,11 +219,20 @@ const ManufacturerForm = ({ isOpen, onClose, manufacturerId }) => {
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+        {/* 👇 Footer: force buttons to stay on the same line */}
+        <DialogFooter className="flex flex-row justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="whitespace-nowrap"
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={submitLoading}>
+          <Button
+            onClick={handleSave}
+            disabled={submitLoading}
+            className="whitespace-nowrap"
+          >
             {isEditMode ? "Update" : "Create"}
           </Button>
         </DialogFooter>

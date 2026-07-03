@@ -31,7 +31,7 @@ import {
   Search,
   SquarePlus,
 } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const DataTable = ({
@@ -110,9 +110,10 @@ const DataTable = ({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between py-1">
+      {/* Toolbar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 py-1">
         {!hideSearch && (
-          <div className="relative w-64">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               value={searchValue}
@@ -128,16 +129,16 @@ const DataTable = ({
                 }
               }}
               placeholder={searchPlaceholder}
-              className="pl-8 h-9 text-sm bg-gray-50 border-gray-200"
+              className="pl-8 h-9 text-sm bg-gray-50 border-gray-200 w-full"
             />
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           {!hideColumn && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" size="sm">
                   Columns <ChevronDown className="ml-2 h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
@@ -190,20 +191,15 @@ const DataTable = ({
         </div>
       </div>
 
-      <div className="rounded-none border min-h-[31rem]">
-        <Table>
+      {/* Table container with horizontal scroll */}
+      <div className="rounded-none border min-h-[31rem] overflow-x-auto">
+        <Table className="">
+          {" "}
+          {/* 👈 Add this */}
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
                 {expandableRow && <TableHead className="w-10" />}
-                {/* {hg.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </TableHead>
-                ))} */}
                 {hg.headers.map((header) => (
                   <TableHead
                     key={header.id}
@@ -212,30 +208,18 @@ const DataTable = ({
                         ? header.column.getToggleSortingHandler()
                         : undefined
                     }
-                    className={
-                      header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : ""
-                    }
+                    className={`
+                      ${header.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                      px-2 sm:px-4 py-2 text-xs sm:text-sm
+                    `}
                   >
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 whitespace-normal sm:whitespace-nowrap">
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-
                       {header.column.getCanSort() && (
-                        <>
-                          {/* {header.column.getIsSorted() === "asc" && (
-                            <ChevronUp className="h-3 w-3" />
-                          )}
-                          {header.column.getIsSorted() === "desc" && (
-                            <ChevronDown className="h-3 w-3" />
-                          )}
-                          {!header.column.getIsSorted() && ( */}
-                          <ArrowUpDown className="h-3 w-3 opacity-40" />
-                          {/* // )} */}
-                        </>
+                        <ArrowUpDown className="h-3 w-3 opacity-40 shrink-0" />
                       )}
                     </div>
                   </TableHead>
@@ -243,7 +227,6 @@ const DataTable = ({
               </TableRow>
             ))}
           </TableHeader>
-
           <TableBody>
             {loading ? (
               <TableRow>
@@ -271,7 +254,10 @@ const DataTable = ({
                     )}
 
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className="px-2 sm:px-4 py-2 text-xs sm:text-sm"
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -286,6 +272,7 @@ const DataTable = ({
                         colSpan={
                           row.getVisibleCells().length + (expandableRow ? 1 : 0)
                         }
+                        className="px-2 sm:px-4 py-2"
                       >
                         {expandableRow(row.original)}
                       </TableCell>
@@ -307,8 +294,8 @@ const DataTable = ({
         </Table>
       </div>
 
-      {/* 🔹 Pagination */}
-      <div className="flex items-center justify-between">
+      {/* Pagination */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <span className="text-sm text-muted-foreground">
           Total Records:{" "}
           {isServer
@@ -316,7 +303,7 @@ const DataTable = ({
             : table.getFilteredRowModel().rows.length}
         </span>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="outline">
@@ -347,7 +334,7 @@ const DataTable = ({
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
-          <span className="text-sm">
+          <span className="text-sm whitespace-nowrap">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>

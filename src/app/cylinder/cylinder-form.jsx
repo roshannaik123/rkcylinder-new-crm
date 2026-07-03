@@ -115,13 +115,18 @@ const CylinderForm = ({ isOpen, onClose }) => {
         toast.error(res?.msg || "Failed to create batch");
       }
     } catch (err) {
+
       toast.error("Operation failed");
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      {/* 👇 Responsive dialog: 95% width on mobile, capped on larger screens */}
+      <DialogContent
+        className="w-[95vw] max-w-md sm:max-w-lg"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle>Create Cylinder</DialogTitle>
         </DialogHeader>
@@ -129,7 +134,8 @@ const CylinderForm = ({ isOpen, onClose }) => {
         {(submitLoading || batchLoading) && <LoadingBar />}
 
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          {/* 👇 Responsive grid: stacks on mobile, side‑by‑side on sm+ */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Date *</label>
               <Input
@@ -139,6 +145,9 @@ const CylinderForm = ({ isOpen, onClose }) => {
                   setData({ ...data, cylinder_date: e.target.value })
                 }
               />
+              {errors.cylinder_date && (
+                <p className="text-xs text-red-500">{errors.cylinder_date}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">R K Batch No *</label>
@@ -150,36 +159,11 @@ const CylinderForm = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* <div className="space-y-2">
-            <label className="text-sm font-medium">Vendor *</label>
-            <Select
-              onValueChange={(value) =>
-                setData({ ...data, cylinder_vendor_id: value })
-              }
-              value={data.cylinder_vendor_id}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select vendor" />
-              </SelectTrigger>
-              <SelectContent>
-                {vendorData?.vendor?.map((vendor) => (
-                  <SelectItem key={vendor.id} value={vendor.id.toString()}>
-                    {vendor.vendor_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.cylinder_vendor_id && (
-              <p className="text-xs text-red-500">
-                {errors.cylinder_vendor_id}
-              </p>
-            )}
-          </div>
-        </div> */}
-
+          {/* Vendor dropdown with ReactSelect */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Vendor *</label>
             <ReactSelect
+              key={data.cylinder_sub_manufacturer_id} // forces re‑mount
               options={vendorOptions}
               value={selectedOption}
               onChange={(option) => {

@@ -117,7 +117,11 @@ const VendorForm = ({ isOpen, onClose, vendorId }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md" aria-describedby={undefined}>
+      {/* 👇 Responsive dialog width */}
+      <DialogContent
+        className="w-[95vw] max-w-md sm:max-w-lg"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Edit Vendor" : "Create Vendor"}
@@ -141,7 +145,8 @@ const VendorForm = ({ isOpen, onClose, vendorId }) => {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* 👇 Responsive grid: stacks on mobile, two columns on larger screens */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Mobile</label>
               <Input

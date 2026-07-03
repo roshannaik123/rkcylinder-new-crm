@@ -66,7 +66,7 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
     if (!isOpen) return;
 
     if (!isEditMode) {
-      setData(initialState);
+      setData({ ...initialState });
       setErrors({});
       return;
     }
@@ -103,15 +103,17 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
 
     fetchData();
   }, [isOpen, subId]);
+
   const manufacturerOptions =
     manufacturerData?.manufacturer?.map((m) => ({
       value: m.id.toString(),
       label: m.manufacturer_name,
     })) || [];
 
-  const selectedManufacturer = manufacturerOptions.find(
-    (opt) => opt.value === data.cylinder_sub_manufacturer_id,
-  );
+  const selectedManufacturer =
+    manufacturerOptions.find(
+      (opt) => opt.value === data.cylinder_sub_manufacturer_id,
+    ) ?? null;
 
   const validate = () => {
     const newErrors = {};
@@ -140,7 +142,7 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
     });
-    formData.append("id", cylinderId); // Main batch id is often sent as 'id' in create sub
+    formData.append("id", cylinderId);
 
     try {
       const res = await submitSub({
@@ -151,20 +153,32 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
         data: formData,
       });
 
-      if (res?.code === 200 || res?.code === 201) {
-        toast.success(res?.msg || "Saved successfully");
+      const isSuccess =
+        res?.success === true ||
+        res?.status === "success" ||
+        res?.code === 200 ||
+        res?.code === 201 ||
+        res?.status === 200 ||
+        res?.status === 201 ||
+        (res &&
+          res?.success !== false &&
+          res?.status !== "error" &&
+          res?.status !== "fail");
+
+      if (isSuccess) {
+        toast.success(res?.msg || res?.message || "Saved successfully");
         queryClient.invalidateQueries({
           queryKey: ["cylindersublist", cylinderId],
         });
 
         if (stayOpen) {
-          setData(initialState);
+          setData({ ...initialState });
           setErrors({});
         } else {
           onClose();
         }
       } else {
-        toast.error(res?.msg || "Operation failed");
+        toast.error(res?.msg || res?.message || "Operation failed");
       }
     } catch (err) {
       toast.error("Operation failed");
@@ -173,7 +187,11 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl overflow-y-auto max-h-[90vh]">
+      {/* 👇 Responsive width: 95% on mobile, capped at max-w-2xl */}
+      <DialogContent
+        className="w-[95vw] max-w-2xl"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? "Edit Cylinder" : "Add Cylinder"}
@@ -182,7 +200,8 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
 
         {loading && <LoadingBar />}
 
-        <div className="grid grid-cols-2 gap-4 py-4">
+        {/* 👇 Main grid: stacks on mobile, two columns on sm+ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">RK Serial No *</label>
             <Input
@@ -257,6 +276,7 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
             )}
           </div>
 
+          {/* Month + Year: stays side‑by‑side because they are small */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Month *</label>
@@ -366,9 +386,10 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
           )}
 
           {isBranchTwo && isEditMode && (
-            <div className="col-span-2 border-t pt-4 mt-2">
+            <div className="col-span-1 sm:col-span-2 border-t pt-4 mt-2">
               <h3 className="text-sm font-bold mb-4">Quality Checks</h3>
-              <div className="grid grid-cols-2 gap-4">
+              {/* 👇 Responsive grid for quality checks */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   "depressurization",
                   "cleaning",
@@ -396,11 +417,12 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
           )}
         </div>
 
-        <DialogFooter className="flex justify-between">
+        {/* 👇 Footer buttons wrap on small screens */}
+        <DialogFooter className="flex flex-wrap justify-between gap-2">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {!isEditMode && (
               <Button
                 onClick={() => handleSave(true)}
