@@ -56,7 +56,7 @@ const CylinderForm = ({ isOpen, onClose }) => {
     if (isOpen) {
       setData(initialState);
       setErrors({});
-      generateBatchNo();
+      // generateBatchNo();
     }
   }, [isOpen]);
 
@@ -115,7 +115,6 @@ const CylinderForm = ({ isOpen, onClose }) => {
         toast.error(res?.msg || "Failed to create batch");
       }
     } catch (err) {
-
       toast.error("Operation failed");
     }
   };
@@ -128,7 +127,7 @@ const CylinderForm = ({ isOpen, onClose }) => {
         aria-describedby={undefined}
       >
         <DialogHeader>
-          <DialogTitle>Create Cylinder</DialogTitle>
+          <DialogTitle></DialogTitle>
         </DialogHeader>
 
         {(submitLoading || batchLoading) && <LoadingBar />}
@@ -153,7 +152,10 @@ const CylinderForm = ({ isOpen, onClose }) => {
               <label className="text-sm font-medium">R K Batch No *</label>
               <Input
                 value={data.cylinder_batch_nos}
-                readOnly
+                placeholder="Batch No"
+                onChange={(e) =>
+                  setData({ ...data, cylinder_batch_nos: e.target.value })
+                }
                 className="bg-muted"
               />
             </div>

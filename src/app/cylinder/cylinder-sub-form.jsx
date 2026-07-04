@@ -110,10 +110,9 @@ const CylinderSubForm = ({ isOpen, onClose, subId, cylinderId }) => {
       label: m.manufacturer_name,
     })) || [];
 
-  const selectedManufacturer =
-    manufacturerOptions.find(
-      (opt) => opt.value === data.cylinder_sub_manufacturer_id,
-    ) ?? null;
+  const selectedManufacturer = manufacturerOptions.find(
+    (opt) => opt.value === data.cylinder_sub_manufacturer_id,
+  );
 
   const validate = () => {
     const newErrors = {};
